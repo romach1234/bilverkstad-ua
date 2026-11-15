@@ -1,0 +1,41 @@
+# Чи працюють хуки й скрипти на Windows і Linux. Запуск — на кожен push і вручну (Actions → Run workflow).
+name: perevirka
+on: [push, workflow_dispatch]
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash   # на Windows — Git Bash, той самий, через який Claude Code запускає хуки
+    env:
+      PYTHONUTF8: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - name: Бібліотеки
+        run: uv sync
+      - name: Скрипти компілюються
+        run: uv run python -m compileall -q tools
+      - name: Хук старту сесії (як у .claude/settings.json)
+        run: |
+          out=$(uv run --no-project --quiet python "./tools/hooks/session_start.py")
+          echo "$out" | uv run --no-project python -c "import json,sys; d=json.load(sys.stdin); assert 'HANDOFF' in d['hookSpecificOutput']['additionalContext']; print('ok')"
+      - name: Хук машини — номер кирилицею, нова машина
+        run: |
+          mkdir -p cars/aa1234bb && echo "стан" > cars/aa1234bb/x-stan.md
+          out=$(echo '{"prompt":"глянь АА1234ВВ і ВС5555ХА","session_id":"ci"}' | uv run --no-project --quiet python "./tools/hooks/car_context.py")
+          echo "$out" | uv run --no-project python -c "import json,sys; t=json.load(sys.stdin)['hookSpecificOutput']['additionalContext']; assert 'AA1234BB' in t and 'BC5555XA' in t and 'nove-avto' in t, t; print('ok')"
+      - name: Хук машини — артикул не номер
+        run: |
+          out=$(echo '{"prompt":"артикул ADT38826","session_id":"ci2"}' | uv run --no-project --quiet python "./tools/hooks/car_context.py")
+          test -z "$out" && echo ok
+      - name: Звірка фікстур і значень (порожній репо)
+        run: |
+          uv run tools/verify_raw.py
+          uv run tools/verify_values.py --all
+      - name: Середовище й джерела (з мережі GitHub — лише довідково)
+        run: uv run tools/perevirka_seredovyshcha.py || true

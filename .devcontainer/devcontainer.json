@@ -1,0 +1,29 @@
+// Контейнер для Linux. Відкрити: VS Code → «Dev Containers: Reopen in Container».
+// Чому монтування саме такі — .devcontainer/README.md
+{
+  "name": "bilverkstad-ua",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": "..",
+    "args": { "USERNAME": "${localEnv:USER}", "USER_UID": "1000", "USER_GID": "1000" }
+  },
+  // Репо — за тим самим абсолютним шляхом, що на хості: Claude Code називає папку чатів за шляхом
+  "workspaceMount": "source=${localWorkspaceFolder},target=${localWorkspaceFolder},type=bind",
+  "workspaceFolder": "${localWorkspaceFolder}",
+  "remoteUser": "${localEnv:USER}",
+  "updateRemoteUserUID": true,
+  "mounts": [
+    // Чати, налаштування й вхід Claude Code — спільні з хостом
+    "source=${localEnv:HOME}/.claude,target=${localEnv:HOME}/.claude,type=bind",
+    "source=${localEnv:HOME}/.claude.json,target=${localEnv:HOME}/.claude.json,type=bind",
+    // git push по SSH (ключі тільки для читання)
+    "source=${localEnv:HOME}/.ssh,target=${localEnv:HOME}/.ssh,type=bind,readonly"
+    // Своя бібліотека мануалів (kb/manualy.md) — розкоментувати й вписати шлях:
+    // ,"source=${localEnv:HOME}/manuals,target=${localEnv:HOME}/manuals,type=bind,readonly"
+  ],
+  // Перший запуск: Python і бібліотеки, потім перевірка середовища й джерел
+  "postCreateCommand": "uv sync && uv run tools/perevirka_seredovyshcha.py || true",
+  "customizations": {
+    "vscode": { "extensions": ["anthropic.claude-code"] }
+  }
+}

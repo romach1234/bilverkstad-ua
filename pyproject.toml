@@ -1,0 +1,16 @@
+[project]
+name = "bilverkstad-ua-tools"
+version = "0.1.0"
+description = "Скрипти tools/ репо нотаток автомайстерні"
+requires-python = ">=3.11"
+# Без них скрипти працюють, крім позначеного
+dependencies = [
+    "markdown",          # md2html.py / guides_to_cars.py: HTML гайдів для телефона
+    "pymupdf",           # freeze.py: текст із PDF
+    "pillow",            # freeze.py, youtube.py frames: фото, аркуш кадрів
+    "pillow-heif",       # freeze.py: фото з iPhone (HEIC) → JPG
+    "yt-dlp[default]",   # youtube.py transcript: субтитри YouTube
+]
+
+[tool.uv]
+package = false

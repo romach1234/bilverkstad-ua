@@ -1,0 +1,9 @@
+{
+  "_comment": "Профіль країни для коду (хук tools/hooks/car_context.py). Для людей і скілів — kb/region.md. Літери номера — ті, що однаково пишуться кирилицею й латиницею; тека машини — латиницею малими.",
+  "country": "UA",
+  "name": "Україна",
+  "plate_regex": "[ABCEHIKMOPTXАВСЕНІКМОРТХ]{2}\\d{4}[ABCEHIKMOPTXАВСЕНІКМОРТХ]{2}",
+  "plate_example": "AA1234BB, КА0001ВС",
+  "currency": "грн",
+  "profile": "kb/region.md"
+}

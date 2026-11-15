@@ -1,0 +1,18 @@
+__pycache__/
+*.pyc
+
+# Тека, куди оператор скидає збережені сторінки й фото.
+# Самі файли в репо не потрібні — freeze.py копіює їх у raw/ із хешем і датою.
+# Але сама тека — в репо (через .gitkeep), щоб на кожному компі вона вже була.
+downloads/*
+!downloads/.gitkeep
+
+# yt-dlp, який youtube.py качає сам — бінарник, у репо не потрібен
+tools/.bin/
+
+# Python-середовище uv (pyproject.toml) — на кожному компі своє
+.venv/
+uv.lock
+
+# Особисті налаштування Claude Code
+.claude/settings.local.json
